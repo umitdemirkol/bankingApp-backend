@@ -41,7 +41,7 @@ public class TransactionController {
         return transactionService.transferMoney(request);
     }
 
-    @GetMapping("/accountAsync/{accountId}")
+    @GetMapping("/accountHistoryAsync/{accountId}")
     public CompletableFuture<List<Transactions>> viewTransactionHistoryAsync(
             @PathVariable UUID accountId, @AuthenticationPrincipal UsersEntity currentUser) {
 
@@ -50,11 +50,16 @@ public class TransactionController {
                 .exceptionally(ex ->  Collections.emptyList());
     }
 
-    @GetMapping("/account/{accountId}")
+    @GetMapping("/accountHistory/{accountId}")
     public List<Transactions> viewTransactionHistory(
             @PathVariable UUID accountId, @AuthenticationPrincipal UsersEntity currentUser) {
 
         return transactionService.getTransactionHistory(accountId,currentUser);
+    }
+    @GetMapping("/userAllHistory")
+    public List<Transactions> viewAllTransactionHistory( @AuthenticationPrincipal UsersEntity currentUser) {
+
+        return transactionService.getAllTransactionHistory(currentUser);
     }
 
 }

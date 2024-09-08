@@ -13,7 +13,7 @@ import org.springframework.web.context.request.WebRequest;
 @Component
 public class GlobalExceptionHandler {
 
-    private static final String DEFAULT_ERROR_MESSAGE = "unable request .";
+    private static final String DEFAULT_ERROR_MESSAGE = "Unable request .";
     private static final Long DEFAULT_ERROR_CODE = 999999L;
 
     @ExceptionHandler

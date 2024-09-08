@@ -25,6 +25,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.stream.Collectors;
 
 @Service
 public class TransactionService {
@@ -171,7 +172,7 @@ public class TransactionService {
     public CompletableFuture<List<Transactions>> getTransactionHistoryAsync(UUID accountId, UsersEntity currentUser) {
         return CompletableFuture.supplyAsync(() ->{
             List<Transactions> transactionsList=new ArrayList<>();
-            List<TransactionsEntity> transactionsEntityList= transactionRepository.findByToAccountId(accountId);
+            List<TransactionsEntity> transactionsEntityList= transactionRepository.findByFromAccountId(accountId);
 
             for(TransactionsEntity te:transactionsEntityList){
                 Transactions transactions=new Transactions(te.getId(),te.getFromAccount().getId(),te.getToAccount().getId(), te.getAmount(),te.getTransactionDate(),TransactionStatus.findByValue(te.getStatus()));
@@ -186,7 +187,7 @@ public class TransactionService {
 
     public List<Transactions> getTransactionHistory(UUID accountId, UsersEntity currentUser) {
             List<Transactions> transactionsList=new ArrayList<>();
-            List<TransactionsEntity> transactionsEntityList= transactionRepository.findByToAccountId(accountId);
+            List<TransactionsEntity> transactionsEntityList= transactionRepository.findByFromAccountId(accountId);
 
             for(TransactionsEntity te:transactionsEntityList){
                 Transactions transactions=new Transactions(te.getId(),te.getFromAccount().getId(),te.getToAccount().getId(), te.getAmount(),te.getTransactionDate(),TransactionStatus.findByValue(te.getStatus()));
@@ -197,6 +198,22 @@ public class TransactionService {
             return transactionsList;
 
     }
+    public List<Transactions> getAllTransactionHistory(UsersEntity currentUser) {
+        List<Transactions> transactionsList=new ArrayList<>();
+        List<AccountEntity> accountEntityList=accountRepository.getAccountsByUserId(currentUser.getId());
+        List<UUID> accountIds = accountEntityList.stream()
+                .map(AccountEntity::getId)
+                .collect(Collectors.toList());
+        List<TransactionsEntity> transactionsEntityList= transactionRepository.findByAccountIds(accountIds);
 
+        for(TransactionsEntity te:transactionsEntityList){
+            Transactions transactions=new Transactions(te.getId(),te.getFromAccount().getId(),te.getToAccount().getId(), te.getAmount(),te.getTransactionDate(),TransactionStatus.findByValue(te.getStatus()));
+            transactionsList.add(transactions);
+        }
+
+
+        return transactionsList;
+
+    }
 
 }
